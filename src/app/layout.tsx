@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Teorita: FastDL-API",
+  title: "Teoritta FastDL-API",
   description: "A simple API wrapper for FastDL.app",
 };
 
