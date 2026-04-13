@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Username diperlukan" }, { status: 400 });
   }
 
-  const rawKeys = await redis.get<string>('MY_KEYS');
+  const rawKeys = await redis.get<string>('browserless_io');
 
   if (!rawKeys) {
     return NextResponse.json({ error: "No keys found in Redis" }, { status: 500 });
