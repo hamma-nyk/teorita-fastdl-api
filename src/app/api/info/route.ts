@@ -1,4 +1,11 @@
 import { NextResponse } from "next/server";
+import { Redis } from '@upstash/redis';
+
+// Inisialisasi Redis
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL!,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
+});
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -8,19 +15,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Username diperlukan" }, { status: 400 });
   }
 
-  // 1. Ambil API Keys dan acak urutannya (Shuffle)
-  const apiKeysRaw = process.env.BROWSERLESS_API_KEYS || "";
-  const allKeys = apiKeysRaw.split(",").filter((k) => k.trim() !== "");
+  const rawKeys = await redis.get<string>('MY_KEYS');
 
-  // Algoritma Shuffle sederhana
-  const shuffledKeys = allKeys.sort(() => Math.random() - 0.5);
-
-  if (shuffledKeys.length === 0) {
-    return NextResponse.json(
-      { error: "Konfigurasi API Keys kosong" },
-      { status: 500 },
-    );
+  if (!rawKeys) {
+    return NextResponse.json({ error: "No keys found in Redis" }, { status: 500 });
   }
+
+  // 2. Ubah string jadi Array dan Shuffle
+  const apiKeys = rawKeys.split(',').map(k => k.trim()).filter(Boolean);
+  const shuffledKeys = apiKeys.sort(() => Math.random() - 0.5);
 
   const jsCode = `
     export default async ({ page }) => {
