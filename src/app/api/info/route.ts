@@ -56,7 +56,7 @@ export async function GET(request: Request) {
   // 2. Loop melalui kunci yang sudah diacak
   for (const key of shuffledKeys) {
     try {
-      const url = `https://production-sfo.browserless.io/function?token=${key}`;
+      const url = `https://production-sfo.browserless.io/chromium/function?blockAds=false&timeout=60000&token=${key}`;
 
       const response = await fetch(url, {
         method: "POST",
@@ -64,6 +64,8 @@ export async function GET(request: Request) {
         body: jsCode,
         cache: "no-store", // Memastikan tidak ada cache
       });
+
+      console.log(`Menguji key ${key.substring(0, 6)}... Status: ${response.status}`);
 
       // Jika status error yang berhubungan dengan Key (Limit/Auth/Bad Request)
       if (
